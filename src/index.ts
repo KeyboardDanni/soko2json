@@ -1,44 +1,36 @@
 #! /usr/bin/env node
 
 import { Command } from "commander";
-import * as fs from "fs";
-
-function readFile(_path: string) {}
-
-async function readDirectory(path: string) {
-    const dir = await fs.promises.opendir(path);
-
-    for await (const dirent of dir) {
-        if (dirent.isDirectory()) {
-            readDirectory(dirent.path);
-        } else {
-            readFile(dirent.path);
-        }
-    }
-}
-
-function startConversion(source: string) {
-    fs.stat(source, (err, stats) => {
-        if (err) {
-            console.error(`${err.name}: ${err.message}`);
-            process.exit(1);
-        }
-
-        if (stats.isDirectory()) {
-            readDirectory(source);
-        } else {
-            readFile(source);
-        }
-    });
-}
+import { Reader } from "./reader";
+import { XsbConverter } from "./converters/xsb";
 
 function main() {
+    let status = 1;
+    const reader = new Reader();
     const command = new Command();
 
+    reader.converters.push(new XsbConverter());
+
+    let convertersList = "";
+
+    for (const converter of reader.converters) {
+        convertersList += converter.name + "\n";
+    }
+
+    convertersList = convertersList.trimEnd();
+
     command
+        .name("soko2json")
+        .description(
+            `Converts Sokoban files into the JSON format used by Super Crate Hoard.\n\nAvailable converters:\n ${convertersList}`
+        )
         .argument("<source>", "input file or folder")
-        .action((source) => startConversion(source))
+        .action((source) => {
+            status = reader.startConversion(source) ? 0 : 1;
+        })
         .parse(process.argv);
+
+    return status;
 }
 
 main();
