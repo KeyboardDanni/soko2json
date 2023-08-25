@@ -3,9 +3,7 @@
 import { Command } from "commander";
 import * as fs from "fs";
 
-function readFile(path: string) {
-
-}
+function readFile(_path: string) {}
 
 async function readDirectory(path: string) {
     const dir = await fs.promises.opendir(path);
@@ -13,8 +11,7 @@ async function readDirectory(path: string) {
     for await (const dirent of dir) {
         if (dirent.isDirectory()) {
             readDirectory(dirent.path);
-        }
-        else {
+        } else {
             readFile(dirent.path);
         }
     }
@@ -29,8 +26,7 @@ function startConversion(source: string) {
 
         if (stats.isDirectory()) {
             readDirectory(source);
-        }
-        else {
+        } else {
             readFile(source);
         }
     });
@@ -39,7 +35,8 @@ function startConversion(source: string) {
 function main() {
     const command = new Command();
 
-    command.argument("<source>", "input file or folder")
+    command
+        .argument("<source>", "input file or folder")
         .action((source) => startConversion(source))
         .parse(process.argv);
 }
