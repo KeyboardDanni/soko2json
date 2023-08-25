@@ -1,0 +1,22 @@
+{
+  "name": "soko2json",
+  "version": "0.0.1",
+  "description": "Converts Sokoban puzzle files to the JSON format used by Super Crate Hoard.",
+  "main": "dist/index.js",
+  "bin": {
+    "soko2json": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.6",
+    "typescript": "^5.2.2"
+  }
+}
