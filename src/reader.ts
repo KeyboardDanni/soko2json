@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { Level, LevelCollection } from "./level";
+import { Level, LevelCollection, stripConverterMeta } from "./level";
 import { Converter } from "./converter";
 
 export class ReaderError extends Error {
@@ -43,7 +43,11 @@ export class Reader {
     readDirectory(path: string) {
         const collection = new LevelCollection();
 
-        collection.levels = this.readSubdirectory(path);
+        const levels = this.readSubdirectory(path);
+
+        for (const level of levels) {
+            collection.verifyAndAddLevel(level);
+        }
 
         return collection;
     }
@@ -55,11 +59,15 @@ export class Reader {
             if (stats.isDirectory()) {
                 const collection = this.readDirectory(source);
 
-                process.stdout.write(JSON.stringify(collection));
+                process.stdout.write(
+                    JSON.stringify(collection, stripConverterMeta, "    ")
+                );
             } else {
                 const level = this.readFile(source);
 
-                process.stdout.write(JSON.stringify(level));
+                process.stdout.write(
+                    JSON.stringify(level, stripConverterMeta, "    ")
+                );
             }
         } catch (err) {
             if (err instanceof ReaderError) {
