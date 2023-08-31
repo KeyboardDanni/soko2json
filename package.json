@@ -4,7 +4,7 @@
   "description": "Converts Sokoban puzzle files to the JSON format used by Super Crate Hoard.",
   "main": "dist/index.js",
   "bin": {
-    "soko2json": "./dist/index.js"
+    "soko2json": "./dist/src/index.js"
   },
   "files": [
     "./dist/**/*.js",
