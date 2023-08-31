@@ -1,5 +1,7 @@
 /**/*.*
 !src/**/*.ts
 !src/**/*.tsx
+!test/**/*.ts
+!test/**/*.tsx
 /dist
 /node_modules

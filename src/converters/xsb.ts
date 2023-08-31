@@ -37,7 +37,7 @@ export class XsbConverter implements Converter {
 
         for (const line of lines) {
             if (readingTiles && this.isValidTileRow(line)) {
-                const transformed = line.replace(/-|_/, " ");
+                const transformed = line.replaceAll(/-|_/g, " ");
                 level.tiles.push(transformed);
             }
 
