@@ -25,8 +25,13 @@ function main() {
             `Converts Sokoban files into the JSON format used by Super Crate Hoard.\n\nAvailable converters:\n ${convertersList}`
         )
         .argument("<source>", "input file or folder")
-        .action((source) => {
-            status = reader.startConversion(source) ? 0 : 1;
+        .option(
+            "-e, --encoding <encoding>",
+            "Encoding to use for reading text-based files",
+            "utf-8"
+        )
+        .action((source, options) => {
+            status = reader.startConversion(source, options.encoding) ? 0 : 1;
         })
         .parse(process.argv);
 

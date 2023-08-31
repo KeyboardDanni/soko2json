@@ -29,11 +29,27 @@ test("can read xsb files", () => {
         filepath = FILEPATH_PREFIX + filepath;
         const outputPath = filepath + ".json";
 
-        const level = converter.readFile(filepath);
+        const level = converter.readFile(filepath, "utf-8");
 
         const expectedFile = fs.readFileSync(outputPath, "utf-8");
         const expectedLevel = JSON.parse(expectedFile);
 
         expect(level).toMatchObject(expectedLevel);
     }
+});
+
+test("can read alternate encoding xsb files", () => {
+    const converter = new XsbConverter();
+
+    const filepath = FILEPATH_PREFIX + "xsb/windows1252.xsb";
+    const outputPath = filepath + ".json";
+
+    const levelBad = converter.readFile(filepath, "utf-8");
+    const levelGood = converter.readFile(filepath, "windows-1252");
+
+    const expectedFile = fs.readFileSync(outputPath, "utf-8");
+    const expectedLevel = JSON.parse(expectedFile);
+
+    expect(levelBad).not.toMatchObject(expectedLevel);
+    expect(levelGood).toMatchObject(expectedLevel);
 });
