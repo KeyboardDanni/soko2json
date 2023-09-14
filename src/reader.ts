@@ -29,7 +29,7 @@ export class Reader {
     }
 
     readSubdirectory(path: string, options: ConversionOptions) {
-        const levels: Level[] = [];
+        let levels: Level[] = [];
 
         const items = fs.readdirSync(path);
         items.sort((a, b) => a.localeCompare(b));
@@ -40,9 +40,11 @@ export class Reader {
             const stats = fs.statSync(itemPath);
 
             if (stats.isDirectory()) {
-                levels.concat(this.readSubdirectory(itemPath, options));
+                levels = levels.concat(
+                    this.readSubdirectory(itemPath, options)
+                );
             } else {
-                levels.push(this.readFile(itemPath, options));
+                levels = levels.concat(this.readFile(itemPath, options));
             }
         }
 
@@ -68,20 +70,17 @@ export class Reader {
             }
 
             const stats = fs.statSync(source);
+            let output;
 
             if (stats.isDirectory()) {
                 const collection = this.readDirectory(source, options);
-
-                process.stdout.write(
-                    JSON.stringify(collection, stripConverterMeta, "    ")
-                );
+                output = JSON.stringify(collection, stripConverterMeta, "    ");
             } else {
-                const level = this.readFile(source, options);
-
-                process.stdout.write(
-                    JSON.stringify(level, stripConverterMeta, "    ")
-                );
+                const levels = this.readFile(source, options);
+                output = JSON.stringify(levels, stripConverterMeta, "    ");
             }
+
+            process.stdout.write(output);
         } catch (err) {
             if (err instanceof ReaderError) {
                 console.error(`${err.name}: ${err.message}`);

@@ -28,7 +28,7 @@ export class XsbConverter implements Converter {
         return path.toLocaleLowerCase().endsWith(".xsb");
     }
 
-    readFile(path: string, encoding: string): Level {
+    readFile(path: string, encoding: string): Level[] {
         const level = new Level();
         const fileBuffer = fs.readFileSync(path);
         const file = new TextDecoder(encoding).decode(fileBuffer);
@@ -62,6 +62,6 @@ export class XsbConverter implements Converter {
             }
         }
 
-        return level;
+        return [level];
     }
 }

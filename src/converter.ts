@@ -4,5 +4,5 @@ export interface Converter {
     readonly name: string;
 
     wantsFile(path: string): boolean;
-    readFile(path: string, encoding: string): Level;
+    readFile(path: string, encoding: string): Level[];
 }

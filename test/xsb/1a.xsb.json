@@ -1,15 +1,17 @@
-{
-    "name": "Sokoban Level (Player on dropzone)",
-    "author": "Danni",
-    "tiles":
-    [
-        "########",
-        "#+.*   #",
-        "#.*. $ #",
-        "#*.. $ #",
-        "#    $ #",
-        "# $$$  #",
-        "#      #",
-        "########"
-    ]
-}
+[
+    {
+        "name": "Sokoban Level (Player on dropzone)",
+        "author": "Danni",
+        "tiles":
+        [
+            "########",
+            "#+.*   #",
+            "#.*. $ #",
+            "#*.. $ #",
+            "#    $ #",
+            "# $$$  #",
+            "#      #",
+            "########"
+        ]
+    }
+]
