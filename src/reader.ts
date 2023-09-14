@@ -6,20 +6,29 @@ export class ReaderError extends Error {
     name = "ReaderError";
 }
 
+export interface ConversionOptions {
+    converter: string;
+    encoding: string;
+}
+
 export class Reader {
     converters: Converter[] = [];
 
-    readFile(path: string, encoding: string) {
+    readFile(path: string, options: ConversionOptions) {
         for (const converter of this.converters) {
-            if (converter.wantsFile(path)) {
-                return converter.readFile(path, encoding);
+            if (
+                (options.converter.length <= 0 && converter.wantsFile(path)) ||
+                options.converter.toLocaleLowerCase() ===
+                    converter.name.toLocaleLowerCase()
+            ) {
+                return converter.readFile(path, options.encoding);
             }
         }
 
         throw new ReaderError(`No converter found for "${path}"`);
     }
 
-    readSubdirectory(path: string, encoding: string) {
+    readSubdirectory(path: string, options: ConversionOptions) {
         const levels: Level[] = [];
 
         const items = fs.readdirSync(path);
@@ -31,19 +40,19 @@ export class Reader {
             const stats = fs.statSync(itemPath);
 
             if (stats.isDirectory()) {
-                levels.concat(this.readSubdirectory(itemPath, encoding));
+                levels.concat(this.readSubdirectory(itemPath, options));
             } else {
-                levels.push(this.readFile(itemPath, encoding));
+                levels.push(this.readFile(itemPath, options));
             }
         }
 
         return levels;
     }
 
-    readDirectory(path: string, encoding: string) {
+    readDirectory(path: string, options: ConversionOptions) {
         const collection = new LevelCollection();
 
-        const levels = this.readSubdirectory(path, encoding);
+        const levels = this.readSubdirectory(path, options);
 
         for (const level of levels) {
             collection.verifyAndAddLevel(level);
@@ -52,18 +61,22 @@ export class Reader {
         return collection;
     }
 
-    startConversion(source: string, encoding: string = "utf-8"): boolean {
+    startConversion(source: string, options: ConversionOptions): boolean {
         try {
+            if (options.converter === "auto") {
+                options.converter = "";
+            }
+
             const stats = fs.statSync(source);
 
             if (stats.isDirectory()) {
-                const collection = this.readDirectory(source, encoding);
+                const collection = this.readDirectory(source, options);
 
                 process.stdout.write(
                     JSON.stringify(collection, stripConverterMeta, "    ")
                 );
             } else {
-                const level = this.readFile(source, encoding);
+                const level = this.readFile(source, options);
 
                 process.stdout.write(
                     JSON.stringify(level, stripConverterMeta, "    ")

@@ -30,8 +30,18 @@ function main() {
             "Encoding to use for reading text-based files",
             "utf-8"
         )
+        .option(
+            "-c, --converter <converter>",
+            "Force the use of a specific converter.",
+            "auto"
+        )
         .action((source, options) => {
-            status = reader.startConversion(source, options.encoding) ? 0 : 1;
+            status = reader.startConversion(source, {
+                encoding: options.encoding,
+                converter: options.converter,
+            })
+                ? 0
+                : 1;
         })
         .parse(process.argv);
 
