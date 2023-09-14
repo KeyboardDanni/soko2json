@@ -34,6 +34,10 @@ export class XsbConverter implements Converter {
         const file = new TextDecoder(encoding).decode(fileBuffer);
         const lines = file.split(/\r?\n/);
 
+        const pathParts = path.split(/[/\\]/g);
+        // Chop off last four chars to remove the .xsb extension
+        level.name = pathParts[pathParts.length - 1].slice(0, -4);
+
         let readingTiles = true;
 
         for (const line of lines) {

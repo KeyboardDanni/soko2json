@@ -8,6 +8,7 @@ const XSB_FILES = [
     "xsb/1a.xsb",
     "xsb/1b.xsb",
     "xsb/trailingSpace.xsb",
+    "xsb/noname.xsb",
 ];
 
 test("wants xsb files", () => {
