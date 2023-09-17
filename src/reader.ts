@@ -28,7 +28,7 @@ export class Reader {
         throw new ReaderError(`No converter found for "${path}"`);
     }
 
-    readSubdirectory(path: string, options: ConversionOptions) {
+    readDirectory(path: string, options: ConversionOptions) {
         let levels: Level[] = [];
 
         const items = fs.readdirSync(path);
@@ -40,9 +40,7 @@ export class Reader {
             const stats = fs.statSync(itemPath);
 
             if (stats.isDirectory()) {
-                levels = levels.concat(
-                    this.readSubdirectory(itemPath, options)
-                );
+                levels = levels.concat(this.readDirectory(itemPath, options));
             } else {
                 levels = levels.concat(this.readFile(itemPath, options));
             }
@@ -51,10 +49,22 @@ export class Reader {
         return levels;
     }
 
-    readDirectory(path: string, options: ConversionOptions) {
+    startReadDirectory(path: string, options: ConversionOptions) {
         const collection = new LevelCollection();
 
-        const levels = this.readSubdirectory(path, options);
+        const levels = this.readDirectory(path, options);
+
+        for (const level of levels) {
+            collection.verifyAndAddLevel(level);
+        }
+
+        return collection;
+    }
+
+    startReadFile(path: string, options: ConversionOptions) {
+        const collection = new LevelCollection();
+
+        const levels = this.readFile(path, options);
 
         for (const level of levels) {
             collection.verifyAndAddLevel(level);
@@ -70,16 +80,19 @@ export class Reader {
             }
 
             const stats = fs.statSync(source);
-            let output;
+            let collection;
 
             if (stats.isDirectory()) {
-                const collection = this.readDirectory(source, options);
-                output = JSON.stringify(collection, stripConverterMeta, "    ");
+                collection = this.startReadDirectory(source, options);
             } else {
-                const levels = this.readFile(source, options);
-                output = JSON.stringify(levels, stripConverterMeta, "    ");
+                collection = this.startReadFile(source, options);
             }
 
+            const output = JSON.stringify(
+                collection,
+                stripConverterMeta,
+                "    "
+            );
             process.stdout.write(output);
         } catch (err) {
             if (err instanceof ReaderError) {
