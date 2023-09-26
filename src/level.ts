@@ -13,12 +13,14 @@ export class LevelCollection {
     name: string = "";
     author: string = "";
     description: string = "";
+    saveId: string = "";
     levels: Level[] = [];
 
     verifyAndAddLevel(level: Level) {
         if (level._collection) {
             if (this.name.length <= 0) {
                 this.name = level._collection;
+                this.saveId = this.name;
             } else if (this.name !== level._collection) {
                 console.warn(
                     `Warning: Level ${
